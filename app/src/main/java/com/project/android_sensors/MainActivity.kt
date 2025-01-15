@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         sensorManager = getSystemService(
             Context.SENSOR_SERVICE) as SensorManager
         accelerometre = sensorManager.getDefaultSensor(
-            Sensor.TYPE_ACCELEROMETER) as Sensor
+            Sensor.TYPE_LINEAR_ACCELERATION) as Sensor
         sensorManager.registerListener(this, accelerometre,
             SensorManager.SENSOR_DELAY_NORMAL)
     }
@@ -49,10 +50,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         binding.xProgressBar.progress = abs(x*10.0).toInt()
         binding.yProgressBar.progress = abs(y*10.0).toInt()
         binding.zProgressBar.progress = abs(z*10.0).toInt()
-        if (binding.xProgressBar.progress>10){
-            vegades = binding.contadorTextViewNum
-            binding.contadorTextViewNum.setText(binding.contadorTextViewNum)
+        if (binding.xProgressBar.progress in 91..99 ||
+            binding.yProgressBar.progress in 91..99 ||
+            binding.zProgressBar.progress in 91..99){
+            vegades = binding.contadorTextViewNum.text.toString().toInt() +1
+            binding.contadorTextViewNum.text = vegades.toString()
+            Log.i("INFO", vegades.toString())
         }
+
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
