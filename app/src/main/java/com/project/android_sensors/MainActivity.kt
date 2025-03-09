@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -71,6 +72,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         if (x>threshold && currentTime - lastDoubleTap > cooldDown){
             if (currentTime - lastTapTimeX < timeWindow) {
+                Toast.makeText(this,"S'ha fet un double tap a l'eix X", Toast.LENGTH_SHORT).show()
                 tapCounterX = binding.contadorXTextViewNum.text.toString().toInt() + 1
                 binding.contadorXTextViewNum.text = tapCounterX.toString()
                 vegades = binding.contadorTextViewNum.text.toString().toInt() + 1
@@ -82,6 +84,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
         if (y>threshold && currentTime - lastDoubleTap > cooldDown){
             if (currentTime - lastTapTimeY < timeWindow) {
+                Toast.makeText(this,"S'ha fet un double tap a l'eix Y", Toast.LENGTH_SHORT).show()
                 tapCounterY = binding.contadorYTextViewNum.text.toString().toInt() + 1
                 binding.contadorYTextViewNum.text = tapCounterY.toString()
                 vegades = binding.contadorTextViewNum.text.toString().toInt() +1
@@ -93,6 +96,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
         if (z>threshold && currentTime - lastDoubleTap > cooldDown) {
             if (currentTime - lastTapTimeZ < timeWindow) {
+                Toast.makeText(this,"S'ha fet un double tap a l'eix Z", Toast.LENGTH_SHORT).show()
                 tapCounterZ = binding.contadorZTextViewNum.text.toString().toInt() + 1
                 binding.contadorZTextViewNum.text = tapCounterZ.toString()
                 vegades = binding.contadorTextViewNum.text.toString().toInt() + 1
