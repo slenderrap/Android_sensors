@@ -19,7 +19,18 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private lateinit var accelerometre: Sensor
     private lateinit var binding: ActivityMainBinding
-    private var vegades: Int =0;
+    private var vegades: Int =0
+    private var tapCounterX = 0
+    private var tapCounterY = 0
+    private var tapCounterZ = 0
+    private val threshold = 10.0
+    private val timeWindow = 300L
+    private val cooldDown = 500L
+    private var lastTapTimeX = 0L
+    private var lastTapTimeY = 0L
+    private var lastTapTimeZ = 0L
+    private var lastDoubleTap = 0L
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,20 +53,54 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent) {
         // emprem les dades del sensor
-        val x = event.values[0]
-        val y = event.values[1]
-        val z = event.values[2]
+        val x = abs(event.values[0])
+        val y = abs(event.values[1])
+        val z = abs(event.values[2])
         // 1g = 9,8 m/s² , què és un valor força alt.
         // Al fer *10 ens acostem als 100, que és el valor màxim per defecte de la ProgressBar
         binding.xProgressBar.progress = abs(x*10.0).toInt()
         binding.yProgressBar.progress = abs(y*10.0).toInt()
         binding.zProgressBar.progress = abs(z*10.0).toInt()
-        if (binding.xProgressBar.progress in 91..99 ||
-            binding.yProgressBar.progress in 91..99 ||
-            binding.zProgressBar.progress in 91..99){
-            vegades = binding.contadorTextViewNum.text.toString().toInt() +1
-            binding.contadorTextViewNum.text = vegades.toString()
-            Log.i("INFO", vegades.toString())
+
+        detectDoubleTap(x,y,z)
+    }
+
+    private fun detectDoubleTap(x: Float, y: Float, z: Float) {
+        val currentTime = System.currentTimeMillis()
+
+
+        if (x>threshold && currentTime - lastDoubleTap > cooldDown){
+            if (currentTime - lastTapTimeX < timeWindow) {
+                tapCounterX = binding.contadorXTextViewNum.text.toString().toInt() + 1
+                binding.contadorXTextViewNum.text = tapCounterX.toString()
+                vegades = binding.contadorTextViewNum.text.toString().toInt() + 1
+                binding.contadorTextViewNum.text = vegades.toString()
+                lastDoubleTap = currentTime
+            }else{
+                lastTapTimeX = currentTime
+            }
+        }
+        if (y>threshold && currentTime - lastDoubleTap > cooldDown){
+            if (currentTime - lastTapTimeY < timeWindow) {
+                tapCounterY = binding.contadorYTextViewNum.text.toString().toInt() + 1
+                binding.contadorYTextViewNum.text = tapCounterY.toString()
+                vegades = binding.contadorTextViewNum.text.toString().toInt() +1
+                binding.contadorTextViewNum.text = vegades.toString()
+                lastDoubleTap =currentTime
+            }else{
+                lastTapTimeY = currentTime
+            }
+        }
+        if (z>threshold && currentTime - lastDoubleTap > cooldDown) {
+            if (currentTime - lastTapTimeZ < timeWindow) {
+                tapCounterZ = binding.contadorZTextViewNum.text.toString().toInt() + 1
+                binding.contadorZTextViewNum.text = tapCounterZ.toString()
+                vegades = binding.contadorTextViewNum.text.toString().toInt() + 1
+                binding.contadorTextViewNum.text = vegades.toString()
+                lastDoubleTap = currentTime
+            } else {
+                lastTapTimeZ = currentTime
+            }
         }
 
     }
@@ -63,4 +108,20 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         // TODO("Not yet implemented")
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("tapCounterX",tapCounterX)
+        outState.putInt("tapCounterY",tapCounterY)
+        outState.putInt("tapCounterZ",tapCounterZ)
+        outState.putInt("vegades",vegades)
+    }
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        tapCounterX = savedInstanceState.getInt("tapCounterX", 0)
+        tapCounterY = savedInstanceState.getInt("tapCounterY", 0)
+        tapCounterZ = savedInstanceState.getInt("tapCounterZ", 0)
+        vegades = savedInstanceState.getInt("vegades",0)
+    }
+    
 }
